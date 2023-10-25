@@ -19,7 +19,7 @@ app.get('/addresses', (req, res) => {
 
 app.post('/addresses', (req, res) => {
   const address = req.body;
-
+  console.log('addyyy', address)
   add(address)
     .then(addedAddress => res.send(addedAddress))
     .catch(e => res.status(400).send({message: e.message}))

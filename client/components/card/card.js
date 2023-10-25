@@ -3,31 +3,33 @@ import React, {useState, useEffect} from 'react';
 import styles from './card.module.scss'
 import Button from '../button/button'
 import Input from '../input/input'
-import postAddressRequest from '../../modules/postAddressRequest';
+import deleteById from '../../addressesApi/deleteById';
+import create from '../../addressesApi/create';
+import update from '../../addressesApi/update';
+const emptyAddress = { line1:'', city:'', state:'', zip: '', id:null }
 
-export default function Card({children, address, setAddress}) {
+export default function Card({children, initialAddress = emptyAddress, prependAddress }) {
   const [editState, setEditState] = useState(false);
-  const [addState, setAddState] = useState(false);
+  const [address, setAddress] = useState(initialAddress)
 
   const editHandleClick = () => {
     setEditState(true);
-    //edit the form and save
-    renderEditForm();
+    renderEditForm(address);
   }
 
+  //open the form to create a new address
   const createHandleClick = () => {
-    //post address to db
-    //createAddress open form to write new address
     setEditState(true);
     console.log("create");
   }
-  
-  const deleteHandleClick = () => {
-    //delete module delete id from the db
+
+  //delete address card
+  const handleDelete = () => {
+    deleteById(address.id);
     console.log('delete')
   }
 
-  
+
   const renderEditForm = (address) => {
     const handleChange = (event) => {
       const updatedAddress = {
@@ -36,19 +38,25 @@ export default function Card({children, address, setAddress}) {
       }
       setAddress(updatedAddress);
     }
-    const editAddressOnClick = () => {
+    //update address
+    const handleSaveClick = () => {
       setEditState(false);
-      postAddressRequest(setAddress)
-      //post address on same id
+      if (!address.id) {
+        create(address)
+        .then(createdAddress => prependAddress(createdAddress))
+  
+      } else { 
+        update(address);
+      }
     }
    
     return (
       <div className={`border-2 border-purple p-8 mt-8 w-full md:w-1/2 ${editState ? styles['card__edit--visible']: styles['card__edit']}`}>
-        <Input onChange={handleChange} label="Address Line 1" name="line1" placeholder="Address" value={address?.line1}></Input>
-        <Input onChange={handleChange} label="City" name="city" placeholder="City" value={address?.city}></Input>
-        <Input onChange={handleChange} label="State" name="state" placeholder="State" value={address?.state}></Input>
-        <Input onChange={handleChange} label="Zipcode" name="zipcode" placeholder="Zipcode" value={address?.zipcode}></Input>
-        <Button onClick={editAddressOnClick}variant="primary">Save</Button>
+        <Input onChange={handleChange} label="Address Line 1" name="line1" placeholder="Address" value={address.line1}></Input>
+        <Input onChange={handleChange} label="City" name="city" placeholder="City" value={address.city}></Input>
+        <Input onChange={handleChange} label="State" name="state" placeholder="State" value={address.state}></Input>
+        <Input onChange={handleChange} label="Zipcode" name="zip" placeholder="Zipcode" value={address.zip}></Input>
+        <Button onClick={handleSaveClick} variant="primary">Save</Button>
       </div>
     )
   }
@@ -65,12 +73,12 @@ export default function Card({children, address, setAddress}) {
         {children}
       </div>
       <div >
-        {!address ? 
+        {!address.id ? 
           <Button onClick={createHandleClick} variant="secondary">Add Address</Button>
         : 
           <>
             <Button onClick={editHandleClick} variant="secondary">Edit</Button>
-            <Button onClick={deleteHandleClick} variant="error">Delete</Button>        
+            <Button onClick={handleDelete} variant="error">Delete</Button>        
           </>
         }
       </div>

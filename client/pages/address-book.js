@@ -4,20 +4,17 @@ import Layout from '../components/layout/layout'
 import Input from '../components/input/input'
 import Card from '../components/card/card'
 
-import searchAddresses from '../modules/searchAddresses';
+import search from '../addressesApi/search';
 
 export default function Home( {} ) {
 
   const [addresses, setAddresses] = useState([])
-  const setAddress = updatedAddress => {
-    const updatedAddresses = addresses.map(address => {
-      return address.id === updatedAddress.id ?  updatedAddress : address;
-    })
-    setAddresses(updatedAddresses)
+  const prependAddress = address => {
+    setAddresses([address,...addresses])
   }
 
   useEffect(() => {
-    searchAddresses()
+    search()
       .then(results => setAddresses(results));
   },[])
 
@@ -34,20 +31,16 @@ export default function Home( {} ) {
         ></Input>
       </div>
       <div className="mt-10">
-      <Card editState={false} addState={true}>
+      <Card prependAddress={prependAddress} >
           <p className="text-lg">Add a new user's address</p>
       </Card>
       {addresses.map((address,i) => 
-        <Card key={i} address={address} setAddress={setAddress}>
+        <Card key={i} initialAddress={address} prependAddress={prependAddress}>
           <p>
             {address.line1}, {address.city}, {address.state} {address.zip}
           </p>
         </Card>
       )}
-        <Card editState={true}>
-          <p>Harry Lobster</p>
-          <p>185 Berry St #6100, San Francisco, CA 94107</p>
-        </Card>
       </div>
     </Layout>
   )

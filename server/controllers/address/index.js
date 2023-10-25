@@ -19,7 +19,7 @@ module.exports = {
       ...address,
       id,
     };
-
+    console.log('withID', withId)
     validate( addressSchema, withId );
 
     await redis.HSET( ADDRESSES, withId.id, serialize( withId ) );
