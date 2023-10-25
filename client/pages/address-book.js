@@ -3,15 +3,18 @@ import Head from 'next/head'
 import Layout from '../components/layout/layout'
 import Input from '../components/input/input'
 import Card from '../components/card/card'
-import Button from '../components/button/button'
 
-const searchAddresses = (search = "") =>
-  fetch(`http://localhost:3001/addresses?search=${search}`)
-    .then(response => response.json())
+import searchAddresses from '../modules/searchAddresses';
 
 export default function Home( {} ) {
 
-  let [addresses, setAddresses] = useState([])
+  const [addresses, setAddresses] = useState([])
+  const setAddress = updatedAddress => {
+    const updatedAddresses = addresses.map(address => {
+      return address.id === updatedAddress.id ?  updatedAddress : address;
+    })
+    setAddresses(updatedAddresses)
+  }
 
   useEffect(() => {
     searchAddresses()
@@ -27,7 +30,7 @@ export default function Home( {} ) {
       <div className="w-full md:w-1/2">
         <Input
           icon="icon-search.svg"
-          label="HELLO"
+          name="search"
         ></Input>
       </div>
       <div className="mt-10">
@@ -35,7 +38,7 @@ export default function Home( {} ) {
           <p className="text-lg">Add a new user's address</p>
       </Card>
       {addresses.map((address,i) => 
-        <Card key={i} address={address}>
+        <Card key={i} address={address} setAddress={setAddress}>
           <p>
             {address.line1}, {address.city}, {address.state} {address.zip}
           </p>
