@@ -19,7 +19,6 @@ app.get('/addresses', (req, res) => {
 
 app.post('/addresses', (req, res) => {
   const address = req.body;
-  console.log('addyyy', address)
   add(address)
     .then(addedAddress => res.send(addedAddress))
     .catch(e => res.status(400).send({message: e.message}))
@@ -33,8 +32,8 @@ app.put('/addresses/:id', (req, res) => {
     .then(() => res.send(address))
     .catch(e => res.status(400).send({message: e.message}))
 });
-// GET /addresses/:id, DELETE /addresses/:id
 
+// GET /addresses/:id, DELETE /addresses/:id
 app.get('/addresses/:id', (req, res) => {
   get(req.params.id)
     .then(address => address ? res.send(address) : res.sendStatus(404))

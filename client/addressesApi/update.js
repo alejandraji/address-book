@@ -6,5 +6,6 @@ const update = (address)=>
     },
     body: JSON.stringify(address)
   })
+  .then(response => response.json())
 
 export default update;
