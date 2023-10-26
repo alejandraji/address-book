@@ -27,12 +27,12 @@ module.exports = {
     return withId;
   },
 
-  async update( id, newData ) {
-    log( 'updating', id );
+  async update( address ) {
+    log( 'updating', address.id );
 
-    validate( addressSchema, newData );
+    validate( addressSchema, address);
 
-    await redis.HSET( ADDRESSES, id, serialize( newData ) );
+    await redis.HSET( ADDRESSES, address.id, serialize( address) );
   },
 
   async delete( id ) {

@@ -70,35 +70,38 @@ export default function Card({initialAddress = emptyAddress, prependAddress, rem
     }
     // Update address
     const saveHandleClick = () => {
-      const { line1, ...badAddress } = address;
-      setEditState(false);
       if (!address.id) {
-        create(badAddress)
-         .then(createdAddress => prependAddress(createdAddress))
-        
+        create(address)
+          .then(createdAddress => {
+            setEditState(false);
+            prependAddress(createdAddress)
+          })
       } else { 
-        update(badAddress)
-         .then(updatedAddress => { 
-          console.log(updatedAddress)
-          replaceAddress(updatedAddress)
-        })
-          .catch(errors => console.log(errors))
+        update(address)
+          .then(updatedAddress => {
+            setEditState(false);
+            replaceAddress(updatedAddress)
+          })
+          .catch(errors => {
+            errors.forEach(({params})=> setAddressError(params.missingProperty, `${params.missingProperty} is wrong`)  )
+          })
       }
     }
     // Close form
     const cancelHandleClick = () => {
       setEditState(false);
     }
-
+    console.log('addre errors', addressErrors);
     return (
       <div className={`border-2 border-purple p-8 mt-8 w-full md:w-1/2 ${editState ? styles['card__edit--visible']: styles['card__edit']}`}>
         {formSchema.map(inputSchema => 
-          <Input 
-            key={inputSchema.name}
-            onChange={handleChange} 
-            value={address[inputSchema.name]} 
-            {...inputSchema}
-          />
+            <Input 
+              key={inputSchema.name}
+              onChange={handleChange} 
+              value={address[inputSchema.name]} 
+              errorMessage={addressErrors[inputSchema.name]}
+              {...inputSchema}
+            />
         )}
         <Button onClick={saveHandleClick} variant="primary">Save</Button>
         <Button onClick={cancelHandleClick} variant="primary">Cancel</Button> 

@@ -1,7 +1,7 @@
 const express = require( 'express' );
 const cors = require('cors');
 
-const { add, search, update, get, delete: deleteById }  = require('./controllers/address')
+const { add, search, update, get, delete: deleteById }  = require('./services/address')
 
 const app = express();
 
@@ -28,21 +28,24 @@ app.put('/addresses/:id', (req, res) => {
   const id = req.params.id;
   const address = req.body;
 
-  update(id, address)
+  if (id != address.id) {
+    return res.status(400).send({message: 'id mismatch'})
+  }
+  
+  update(address)
     .then(() => res.send(address))
     .catch(e => res.status(400).send({message: e.message}))
 });
 
-// GET /addresses/:id, DELETE /addresses/:id
 app.get('/addresses/:id', (req, res) => {
   get(req.params.id)
-    .then(address => address ? res.send(address) : res.sendStatus(404))
+    .then(address => address ? res.send(address) : res.status(404).send({message:'NOT FOUND'}))
     .catch(e => res.status(400).send({message: e.message}))
 });
 
 app.delete('/addresses/:id', (req, res) => {
    deleteById(req.params.id)
-    .then(()=>res.sendStatus(200))
+    .then(() => res.send({success: true}))
     .catch(e => res.status(400).send({message: e.message})) //placeholder
 });
 

@@ -5,7 +5,7 @@ import Input from '../components/input/input'
 import Card from '../components/card/card'
 
 import search from '../addressesApi/search';
-import seedAddresses from '../addressesApi/seedAddresses'; 
+// import seedAddresses from '../addressesApi/seedAddresses'; 
 
 export default function Home( {} ) {
   // seedAddresses()
@@ -23,7 +23,7 @@ export default function Home( {} ) {
   const replaceAddress = replacementAddress => {
     setAddresses(addresses.map(address => replacementAddress.id === address.id ? replacementAddress : address))
   }
-
+  // TODO: DEBOUNCE?
   const searchHandleChange = e => setSearchString(e.target.value);
 
   const renderSearchInput = () => {
