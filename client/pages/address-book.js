@@ -25,23 +25,21 @@ export default function Home( {} ) {
   }
 
   const searchHandleChange = e => setSearchString(e.target.value);
-  
+
   const renderSearchInput = () => {
     return (
-      <>
-        <div className="w-full md:w-1/2">
-          <Input
-            value={searchString}
-            onChange={searchHandleChange}
-            icon="icon-search.svg"
-            name="search"
-          />
-        </div>
-      </>
+      <div className="w-full md:w-1/2">
+        <Input
+          value={searchString}
+          onChange={searchHandleChange}
+          icon="icon-search.svg"
+          name="search"
+        />
+      </div>
     )
   }
 
-  const cardProps = {
+  const baseCardProps = {
     prependAddress,
     removeAddress,
     replaceAddress
@@ -50,12 +48,12 @@ export default function Home( {} ) {
   const renderAddressCards = () => {
     return (
       <div className="mt-10">
-        <Card {...cardProps} />
+        <Card {...baseCardProps} />
         {addresses.map((address) => 
           <Card 
             key={address.id} 
             initialAddress={address} 
-            {...cardProps}
+            {...baseCardProps}
           />
         )}
       </div>

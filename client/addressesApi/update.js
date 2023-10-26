@@ -6,6 +6,7 @@ const update = (address)=>
     },
     body: JSON.stringify(address)
   })
-  .then(response => response.json())
+    .then(response => response.json())
+    .catch(({message}) => Promise.reject(JSON.parse(message)))
 
 export default update;

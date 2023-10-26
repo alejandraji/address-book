@@ -8,21 +8,53 @@ import create from '../../addressesApi/create';
 import update from '../../addressesApi/update';
 const emptyAddress = { line1:'', city:'', state:'', zip: '', id:null }
 
+// name needs to match address object keys
+const formSchema = [
+  {
+    label: "Address Line 1",
+    name: "line1",
+    placeholder: "Address",
+    type:'text'
+
+  },
+  {
+    label: "City",
+    name: "city",
+    placeholder: "City",
+    type:'text'
+  },
+  {
+    label: "State",
+    name: "state",
+    placeholder: "State",
+    type:'text'
+  },
+  {
+    label: "Zipcode",
+    name: "zip",
+    placeholder: "Zipcode",
+    type:'text'
+  }
+]
+
 export default function Card({initialAddress = emptyAddress, prependAddress, removeAddress, replaceAddress }) {
   const [editState, setEditState] = useState(false);
   const [address, setAddress] = useState(initialAddress)
+  const [addressErrors, setAddressErrors] = useState({line1: null, zip: null, city: null, state: null})
+  const setAddressError = (name, message) => setAddressErrors({...addressErrors, [name]: message})
+
 
   const formHandleClick = () => {
     setEditState(true);
     renderEditForm(address);
   }
 
-  //open the form to create a new address
+  // Open form to create a new address
   const createHandleClick = () => {
     setEditState(true);
   }
 
-  //delete address card
+  // Delete address
   const deleteHandleClick = () => {
     deleteById(address.id)
     .then(()=> removeAddress(address))
@@ -36,54 +68,62 @@ export default function Card({initialAddress = emptyAddress, prependAddress, rem
       }
       setAddress(updatedAddress);
     }
-    // update address
+    // Update address
     const saveHandleClick = () => {
+      const { line1, ...badAddress } = address;
       setEditState(false);
       if (!address.id) {
-        create(address)
+        create(badAddress)
          .then(createdAddress => prependAddress(createdAddress))
-  
+        
       } else { 
-        update(address)
+        update(badAddress)
          .then(updatedAddress => { 
           console.log(updatedAddress)
           replaceAddress(updatedAddress)
         })
+          .catch(errors => console.log(errors))
       }
     }
-    // close form
+    // Close form
     const cancelHandleClick = () => {
       setEditState(false);
     }
-    
+
     return (
       <div className={`border-2 border-purple p-8 mt-8 w-full md:w-1/2 ${editState ? styles['card__edit--visible']: styles['card__edit']}`}>
-        <Input onChange={handleChange} label="Address Line 1" name="line1" placeholder="Address" value={address.line1}></Input>
-        <Input onChange={handleChange} label="City" name="city" placeholder="City" value={address.city}></Input>
-        <Input onChange={handleChange} label="State" name="state" placeholder="State" value={address.state}></Input>
-        <Input onChange={handleChange} label="Zipcode" name="zip" placeholder="Zipcode" value={address.zip}></Input>
+        {formSchema.map(inputSchema => 
+          <Input 
+            key={inputSchema.name}
+            onChange={handleChange} 
+            value={address[inputSchema.name]} 
+            {...inputSchema}
+          />
+        )}
         <Button onClick={saveHandleClick} variant="primary">Save</Button>
         <Button onClick={cancelHandleClick} variant="primary">Cancel</Button> 
       </div>
     )
   }
 
+  const initialAddressCard = <p>{initialAddress.line1}, {initialAddress.city}, {initialAddress.state} {initialAddress.zip}</p>
+  const addAddressButton = <Button onClick={createHandleClick} variant="secondary">Add Address</Button>
+  const editAndDeleteButtons = (
+    <>
+    <Button onClick={formHandleClick} variant="secondary">Edit</Button>
+    <Button onClick={deleteHandleClick} variant="error">Delete</Button> 
+    </>
+  )
+
   return (
   <div className={styles.card}>
     <div className={`flex flex-wrap justify-between items-center`}>
       <div className="mb-4 md:mb-0">
         {!editState && !address.id  && <p className="text-lg">Add a new user's address</p>}
-        { address.id && <p>{address.line1}, {address.city}, {address.state} {address.zip}</p>}
+        {initialAddress.id && initialAddressCard} 
       </div>
-      <div >
-        {!address.id ? 
-          <Button onClick={createHandleClick} variant="secondary">Add Address</Button>
-        : 
-          <>
-            <Button onClick={formHandleClick} variant="secondary">Edit</Button>
-            <Button onClick={deleteHandleClick} variant="error">Delete</Button>   
-          </>
-        }
+      <div>
+      {!address.id ? addAddressButton : editAndDeleteButtons}
       </div>
     </div>
     {renderEditForm(address)}
