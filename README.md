@@ -7,8 +7,6 @@
   - Clicking on the `Add Address` button should toggle the form editor and clicking on `Save` should save a new user's address.
   - Clicking the `Edit` button should toggle the form editor and clicking on `Save` should close the form editor
   - When you click on `Delete` the user should get deleted.
-  
-# Getting Started
 ## Pre-reqs
 You must have docker and docker-compose running on your system, which you can get [here](https://www.docker.com/products/docker-desktop) for windows & mac.
 
