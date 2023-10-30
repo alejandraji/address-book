@@ -16,7 +16,6 @@ You must have docker and docker-compose running on your system, which you can ge
 ```sh
 docker-compose up
 ```
-
 Your changes will automatically reflect in both the server and the client.
 
 You can find your client at
@@ -29,17 +28,4 @@ http://localhost:3001
 docker-compose run --rm server npx mocha
 ```
 
-## To work inside the container
-First start the servers with
-```sh
-docker-compose up
-```
 
-then in a new terminal
-
-```sh
-docker-compose exec <server | client> /bin/bash
-# eg
-docker-compose exec server /bin/bash
-docker-compose exec client /bin/bash
-```
